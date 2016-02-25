@@ -20,8 +20,9 @@ class HomePageViewTest(TestCase):
         self.assertIn('Woronow', response.content)
         self.assertIn('Feb. 25, 2016', response.content)
         self.assertIn('aleks.woronow@yandex.ru', response.content)
+        self.assertIn('aleks_woronow', response.content)
         self.assertIn('aleksw@42cc.co', response.content)
-        self.assertIn('I was born', response.content)
+        self.assertIn('I was born ...', response.content)
 
 
 class HomePageTest(TestCase):
@@ -39,7 +40,8 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'Feb. 25, 2016')
         self.assertContains(response, 'aleks.woronow@yandex.ru')
         self.assertContains(response, 'aleksw@42cc.co')
-        self.assertContains(response, 'I was born')
+        self.assertContains(response, 'aleks_woronow')
+        self.assertContains(response, 'I was born ...')
 
     def test_home_page_returns_correct_html(self):
         """Test home page returns correct html"""
