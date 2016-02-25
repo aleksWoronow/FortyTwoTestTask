@@ -6,19 +6,19 @@
      <div class="col-md-6">
           <ul class="list-group">
                <li class="list-group-item"></li>
-              <li class="list-group-item">Name: {{ name }}</li>
-               <li class="list-group-item">Surname: {{ surname }}</li>
-               <li class="list-group-item">Date of birth: {{ date_of_birth }}</li>
-               <li class="list-group-item">Bio: {{ bio }}</li>
+              <li class="list-group-item">Name: {{ person.name }}</li>
+               <li class="list-group-item">Surname: {{ person.surname }}</li>
+               <li class="list-group-item">Date of birth: {{ person.date_of_birth }}</li>
+               <li class="list-group-item">Bio: {{ person.bio }}</li>
           </ul>
      </div>      
      <div class="col-md-6">
           <ul class="list-group">
                <li class="list-group-item"><strong>Contacts</strong></li>
-               <li class="list-group-item">Email: {{ email }}</li>
-               <li class="list-group-item">Jabber: {{ jabber }}</li>
-               <li class="list-group-item">Skype id: {{ skype_id }}</li>
-               <li class="list-group-item">Other contacts: {{ other }}</li>
+               <li class="list-group-item">Email: {{ person.email }}</li>
+               <li class="list-group-item">Jabber: {{ person.jabber }}</li>
+               <li class="list-group-item">Skype id: {{ person.skype_id }}</li>
+               <li class="list-group-item">Other contacts: {{ person.other }}</li>
           </ul>
      </div>     
  </div>
