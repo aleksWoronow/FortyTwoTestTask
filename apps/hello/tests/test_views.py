@@ -18,6 +18,10 @@ class HomePageViewTest(TestCase):
         self.assertTemplateUsed(response, 'home.html')
         self.assertIn('Aleks', response.content)
         self.assertIn('Woronow', response.content)
+        self.assertIn('Feb. 25, 2016', response.content)
+        self.assertIn('aleks.woronow@yandex.ru', response.content)
+        self.assertIn('aleksw@42cc.co', response.content)
+        self.assertIn('I was born', response.content)
 
 
 class HomePageTest(TestCase):
