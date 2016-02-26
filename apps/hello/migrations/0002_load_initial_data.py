@@ -7,7 +7,7 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        "Load initial data: admin user and person."
+        "Load initial data: admin user and person data."
         from django.core.management import call_command
         call_command("loaddata", "initial_data.json")
 
