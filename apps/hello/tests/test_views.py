@@ -5,13 +5,14 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 
-from ..views import home_page
+from ..views import home_page, request_view
 
 
 class HomePageViewTest(TestCase):
 
     def test_home_page_view(self):
         """Test view home_page"""
+
         request = self.client.get(reverse('hello:home'))
         response = home_page(request)
         self.assertEqual(response.status_code, 200)
@@ -51,3 +52,18 @@ class HomePageTest(TestCase):
                         startswith(b'<!DOCTYPE html>'))
         self.assertIn(b'<title>My card</title>', response.content)
         self.assertTrue(response.content.strip().endswith(b'</html>'))
+
+
+class RequestViewTest(TestCase):
+    def test_request_view(self):
+        """Test request_view"""
+
+        response = self.client.get(reverse('hello:requests'))
+        response = request_view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'requests.html')
+        self.assertIn('Requests', response.content)
+        self.assertIn('Path', response.content)
+        self.assertIn('Method', response.content)
+        self.assertIn('Date', response.content)
