@@ -2,8 +2,10 @@
 from __future__ import unicode_literals
 
 import datetime
+import json
 
 from django.shortcuts import render
+from django.http import HttpResponse
 
 from .models import Person
 
@@ -22,3 +24,17 @@ def request_view(request):
         'req_date': datetime.datetime.now()
         }
     return render(request, 'requests.html', context)
+
+
+def request_ajax(request):
+    if request.is_ajax():
+        context = {
+            'path': '/',
+            'method': 'GET',
+            'req_date': str(datetime.datetime.now())
+            }
+        data = json.dumps(context)
+        print data
+        return HttpResponse(data, content_type="application/json")
+
+    return None

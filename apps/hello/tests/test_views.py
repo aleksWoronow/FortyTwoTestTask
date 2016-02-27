@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 
-from ..views import home_page, request_view
+from ..views import home_page, request_view, request_ajax
 
 
 class HomePageViewTest(TestCase):
@@ -74,8 +74,12 @@ class RequestAjaxTest(TestCase):
 
         """Test request ajax view"""
         response = self.client.get(reverse('hello:home'))
-        request = self.client.get(reverse('hello:request_ajax'),
-                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request = self.client.get(reverse('hello:requests_ajax'),
+                                  HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        def ajax(): return True
+        request.is_ajax = ajax
+
         response = request_ajax(request)
         self.assertIn('method', response.content)
         self.assertIn('GET', response.content)
