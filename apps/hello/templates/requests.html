@@ -17,14 +17,14 @@
             </thead>
             <tbody>
                 <tr class="info">
-                    <td>/</td>
-                    <td>GET</td>
-                    <td>{% now "jS F Y H:i" %}</td>
+                    <td>{{ path }}</td>
+                    <td>{{ method }}</td>
+                    <td>{{ req_date|date:"d M Y H:i" }}</td>
                 </tr>
                 <tr >
-                    <td>/</td>
-                    <td>GET</td>
-                    <td>{% now "jS F Y H:i" %}</td>
+                    <td>{{ path }}</td>
+                    <td>{{ method }}</td>
+                    <td>{{ req_date|date:"d M Y H:i" }}</td>
                 </tr>
                 
             </tbody>

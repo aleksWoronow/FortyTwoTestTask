@@ -58,7 +58,7 @@ class RequestViewTest(TestCase):
     def test_request_view(self):
         """Test request_view"""
 
-        response = self.client.get(reverse('hello:requests'))
+        request = self.client.get(reverse('hello:requests'))
         response = request_view(request)
 
         self.assertEqual(response.status_code, 200)
