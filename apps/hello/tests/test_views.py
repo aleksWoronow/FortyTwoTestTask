@@ -67,3 +67,17 @@ class RequestViewTest(TestCase):
         self.assertIn('Path', response.content)
         self.assertIn('Method', response.content)
         self.assertIn('Date', response.content)
+
+
+class RequestAjaxTest(TestCase):
+    def test_request_ajax_view(self):
+
+        """Test request ajax view"""
+        response = self.client.get(reverse('hello:home'))
+        request = self.client.get(reverse('hello:request_ajax'),
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        response = request_ajax(request)
+        self.assertIn('method', response.content)
+        self.assertIn('GET', response.content)
+        self.assertIn('path', response.content)
+        self.assertIn('/', response.content)
