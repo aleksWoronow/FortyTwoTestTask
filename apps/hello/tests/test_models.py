@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 
 from datetime import date
 
-from ..models import Person
+from ..models import Person, RequestStore
 
 
 class PersonModelTests(TestCase):
