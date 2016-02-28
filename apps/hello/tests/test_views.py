@@ -73,7 +73,6 @@ class RequestAjaxTest(TestCase):
     def test_request_ajax_view(self):
 
         """Test request ajax view"""
-        response = self.client.get(reverse('hello:home'))
         request = self.client.get(reverse('hello:requests_ajax'),
                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 

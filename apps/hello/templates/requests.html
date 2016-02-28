@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
-{% block title %}(1) {% endblock title %}
+{% block title %} {% endblock title %}
 
 {% block content %}
 <h3>Requests</h3>
@@ -13,22 +13,13 @@
                     <th>Path</th>
                     <th>Method</th>
                     <th>Date</th>
-                <tr>
+                </tr>
             </thead>
             <tbody>
-                <tr class="info">
-                    <td>{{ path }}</td>
-                    <td>{{ method }}</td>
-                    <td>{{ req_date|date:"d M Y H:i" }}</td>
-                </tr>
-                <tr >
-                    <td>{{ path }}</td>
-                    <td>{{ method }}</td>
-                    <td>{{ req_date|date:"d M Y H:i" }}</td>
-                </tr>
-                
             </tbody>
         </table>
     </div>
 </div>   
 {% endblock content %}
+
+{% block script %}<script src="{% static 'js/request.js' %}"></script>{% endblock script %}
