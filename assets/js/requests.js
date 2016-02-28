@@ -3,10 +3,8 @@ var helloRequest = (function($){
   function handleRequest(data) {
 
     var items = [];
-    var j_data = $.parseJSON(data[1]);
     var id = data[0];
-
-    $.each(j_data, function(i, val) {
+    $.each(JSON.parse(data[1]), function(i, val) {
         var req_class = 'old';
         if (parseInt(val.fields.new_request, 10) == 1){
             req_class = 'info';
