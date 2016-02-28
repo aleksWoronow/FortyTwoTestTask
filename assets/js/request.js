@@ -1,20 +1,20 @@
 var helloRequest = (function($){
 
   function handleRequest(data) {
-    //console.log(data);
+
     var items = [];
-    data = JSON.stringify(data);             
-    var j_data = $.parseJSON(data);
-    var id = j_data[0];
-    $.each(j_data[1], function(i, val) {
-        var req_class = '';
-        if (parseInt(val.new_req) == 1){
+    var j_data = $.parseJSON(data[1]);
+    var id = data[0];
+
+    $.each(j_data, function(i, val) {
+        var req_class = 'old';
+        if (parseInt(val.fields.new_request, 10) == 1){
             req_class = 'info';
         }
-        items.push('<tr class="'+req_class+'">'
-                    + '<td>' + val.path + '</td>'
-                    + '<td>' + val.method + '</td>'
-                    + '<td>' + val.req_date + '</td>'
+        items.push('<tr class="' + req_class + '">'
+                    + '<td>' + val.fields.path + '</td>'
+                    + '<td>' + val.fields.method + '</td>'
+                    + '<td>' + val.fields.date + '</td>'
                     + '</tr>'
         );
         
@@ -22,17 +22,21 @@ var helloRequest = (function($){
    var title = $('title').text().split(')')[1] || $('title').text();
    var pre_titile = id ? '(' + id + ')' : '';
    $('#request').find('tbody').html(items);
+   $('td').attr('align', 'center');
    $('title').text(pre_titile + title);
 }
 
  return {
      loadRequest: function(){
          $.ajax({
-             url: '/requests_ajax/',
-             dataType : "json",
-             success: function (data, textStatus) {
-                 handleRequest(data);
-             }
+            url: '/requests_ajax/',
+            dataType : "json",
+            success: function(data, textStatus) {
+                handleRequest(data);
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
          });
      }
  };
@@ -41,5 +45,5 @@ var helloRequest = (function($){
 
 $(document).ready(function(){
     helloRequest.loadRequest();
-    setInterval(helloRequest.loadRequest, 5000);
+    setInterval(helloRequest.loadRequest, 500);
 });

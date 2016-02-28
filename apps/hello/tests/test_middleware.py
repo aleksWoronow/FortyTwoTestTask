@@ -20,6 +20,13 @@ class RequestMiddlewareTests(TestCase):
         self.request_store = RequestStore
         self.user = get_user_model().objects.get(id=1)
 
+    def test_middleware_is_included(self):
+        """Test for inclusion RequestMiddleware in project"""
+        self.client.get(reverse('hello:home'))
+        last_middleware_obj = self.request_store.objects.last()
+        self.assertEqual(last_middleware_obj.method, 'GET')
+        self.assertEqual(last_middleware_obj.path, reverse('hello:home'))
+
     def test_middleware(self):
         """Test middleware RequestMiddle."""
         request = self.factory.get(reverse('hello:home'))

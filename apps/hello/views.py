@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
 import json
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
+from django.core import serializers
 
-from .models import Person
+from .decorators import not_record_request
+from .models import Person, RequestStore
 
 
 def home_page(request):
@@ -17,22 +19,20 @@ def home_page(request):
     return render(request, 'home.html', context)
 
 
+@not_record_request
 def request_view(request):
+    if request.user.is_authenticated():
+        RequestStore.objects.filter(new_request=1).update(new_request=0)
     return render(request, 'requests.html')
 
 
+@not_record_request
 def request_ajax(request):
     if request.is_ajax():
-        context = [
-            {'path': '/',
-             'method': 'GET',
-             'req_date': str(datetime.datetime(2005, 7, 14, 12, 30)),
-             'new_req': 1},
-            {'path': '/',
-             'method': 'GET',
-             'req_date': str(datetime.datetime(2005, 7, 14, 12, 35)),
-             'new_req': 0}]
-        data = json.dumps((1, context))
+        new_request = RequestStore.objects.filter(new_request=1).count()
+        request_list = RequestStore.objects.all()[:10]
+        list = serializers.serialize("json", request_list)
+        data = json.dumps((new_request, list))
         return HttpResponse(data, content_type="application/json")
 
-    return None
+    return HttpResponseBadRequest('Error request')
