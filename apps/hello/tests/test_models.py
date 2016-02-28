@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
+from django.contrib.auth import get_user_model
 
 from datetime import date
 
@@ -64,3 +65,42 @@ class PersonModelTests(TestCase):
         self.assertEquals(only_person.date_of_birth, date(2016, 2, 25))
         self.assertEquals(only_person.bio, 'I was born ...')
         self.assertEquals(str(only_person), 'Woronow Aleks')
+
+
+class RequestStoreTest(TestCase):
+    def test_request_store(self):
+        """Test creating a new request and saving it to the database"""
+
+        request_store = RequestStore()
+        user = get_user_model().objects.get(id=1)
+
+        # test model blank and null fields validation
+        with self.assertRaises(ValidationError) as err:
+            request_store.full_clean()
+        err_dict = err.exception.message_dict
+        self.assertEquals(err_dict['path'][0],
+                          RequestStore._meta.get_field('path').
+                          error_messages['blank'])
+        self.assertEquals(err_dict['method'][0],
+                          RequestStore._meta.get_field('method').
+                          error_messages['blank'])
+
+        # test cretae and save object
+        request_store.path = '/'
+        request_store.method = 'GET'
+        request_store.user = user
+
+        # check we can save it to the database
+        request_store.save()
+
+        # now check we can find it in the database again
+        all_requests = RequestStore.objects.all()
+        self.assertEquals(len(all_requests), 1)
+        only_request = all_requests[0]
+        self.assertEquals(str(only_request), str(request_store))
+
+        # and check that it's saved its two attributes: path and method
+        self.assertEquals(only_request.path, '/')
+        self.assertEquals(only_request.method, 'GET')
+        self.assertEquals(only_request.new_request, 1)
+        self.assertEquals(only_request.user, user)
