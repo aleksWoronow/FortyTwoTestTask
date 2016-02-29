@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
@@ -12,20 +12,21 @@ from ..models import RequestStore
 
 
 class HomePageViewTest(TestCase):
+    def setUp(self):
+        # Every test needs access to the request factory.
+        self.factory = RequestFactory()
+
     def test_home_page_view(self):
         """Test view home_page"""
+        # Create an instance of a GET request.
+        request = self.factory.get('/')
 
-        request = self.client.get(reverse('hello:home'))
+        # Test home_page() as if it were deployed at /
         response = home_page(request)
         self.assertEqual(response.status_code, 200)
+
+        # Test home.html was used in rendering respone
         self.assertTemplateUsed(response, 'home.html')
-        self.assertIn('Aleks', response.content)
-        self.assertIn('Woronow', response.content)
-        self.assertIn('Feb. 25, 2016', response.content)
-        self.assertIn('aleks.woronow@yandex.ru', response.content)
-        self.assertIn('aleks_woronow', response.content)
-        self.assertIn('aleksw@42cc.co', response.content)
-        self.assertIn('I was born ...', response.content)
 
 
 class HomePageTest(TestCase):
