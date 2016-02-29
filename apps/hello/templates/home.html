@@ -3,6 +3,7 @@
 {% block content %}
 <h1>42 Coffee Cups Test Assignment</h1>
 <div class="row">
+     {% if person %}
      <div class="col-md-6">
           <ul class="list-group">
                <li class="list-group-item"></li>
@@ -28,5 +29,7 @@
         <a href="{% url 'hello:requests' %}">requests</a>
      </div>
  </div>
- 
+ {% else %}
+   <p>Contact data no yet</p>
+ {% endif %}
 {% endblock content %}

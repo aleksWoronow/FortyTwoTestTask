@@ -1,31 +1,34 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from datetime import date
+
+from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
 from ..views import home_page, request_view, request_ajax
-from ..models import RequestStore
+from ..models import Person, RequestStore
 
 
 class HomePageViewTest(TestCase):
+    def setUp(self):
+        # Every test needs access to the request factory.
+        self.factory = RequestFactory()
+
     def test_home_page_view(self):
         """Test view home_page"""
+        # Create an instance of a GET request.
+        request = self.factory.get('/')
 
-        request = self.client.get(reverse('hello:home'))
+        # Test home_page() as if it were deployed at /
         response = home_page(request)
         self.assertEqual(response.status_code, 200)
+
+        # Test home.html was used in rendering response
         self.assertTemplateUsed(response, 'home.html')
-        self.assertIn('Aleks', response.content)
-        self.assertIn('Woronow', response.content)
-        self.assertIn('Feb. 25, 2016', response.content)
-        self.assertIn('aleks.woronow@yandex.ru', response.content)
-        self.assertIn('aleks_woronow', response.content)
-        self.assertIn('aleksw@42cc.co', response.content)
-        self.assertIn('I was born ...', response.content)
 
 
 class HomePageTest(TestCase):
@@ -45,6 +48,45 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'aleksw@42cc.co')
         self.assertContains(response, 'aleks_woronow')
         self.assertContains(response, 'I was born ...')
+
+    def test_home_page_if_person_more_then_one(self):
+        """
+        Test check that home page displays only the first record
+        that db has more than 1 instance
+        """
+        # Create second person
+        Person.objects.create(
+            name='Ivan',
+            surname='Ivanov',
+            email='ivan@yandex.ru',
+            jabber='ivan@42cc.co',
+            skype_id='ivan_ivanov',
+            date_of_birth=date(2016, 1, 25),
+            bio='I was born ...')
+
+        # Check that two person in db
+        all_persons = Person.objects.all()
+        self.assertEquals(len(all_persons), 2)
+        first_person = all_persons[0]
+
+        # home page displays only the first record: Aleks
+        response = self.client.get(reverse('hello:home'))
+        self.assertEquals(response.context['person'], first_person)
+        self.assertContains(response, 'Woronow')
+        self.assertNotContains(response, 'Ivan')
+
+    def test_home_page_if_no_person(self):
+        """
+        Test check that home page displays "Contact data no yet"
+        if db has not person instance
+        """
+        # Delete all the Person instance
+        Person.objects.all().delete()
+
+        # home page displays "Contact data no yet"
+        response = self.client.get(reverse('hello:home'))
+        self.assertEquals(response.context['person'], None)
+        self.assertContains(response, 'Contact data no yet')
 
     def test_home_page_returns_correct_html(self):
         """Test home page returns correct html"""

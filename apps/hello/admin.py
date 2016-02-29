@@ -6,13 +6,5 @@ from django.contrib import admin
 from .models import Person, RequestStore
 
 
-class PersonAdmin(admin.ModelAdmin):
-    pass
-
-
-class RequestStoreAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(Person, PersonAdmin)
-admin.site.register(RequestStore, RequestStoreAdmin)
+admin.site.register(Person)
+admin.site.register(RequestStore)
