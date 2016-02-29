@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<h1>42 Coffee Cups Test Assignment</h1>
+<div class="row">
+    <form class="form-horizontal">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="Name">
+                </div>
+            </div>
+            <div class="form-group">
+               <label for="inputEmail3" class="col-sm-2 control-label">Surname</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="Surname">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Date of birth</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="Date of birth">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Photo</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="Photo">
+            </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                  <img src="{% static 'screenshot.png' %}" width="200" height="200"
+                      alt="Towel test photo">
+                </div>
+            </div>
+       </div>         
+       <div class="col-md-5">
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Jabber</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="Jabber">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Skype id</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="Skype id">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Other contacts</label>
+                <div class="col-sm-10">
+                 <textarea class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Bio</label>
+                <div class="col-sm-10">
+                 <textarea class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>    
+        <div class="row">
+            <div class="col-md-6">
+                <input class="btn btn-default" type="submit" value="Save">
+                <input class="btn btn-default" type="submit" value="Cancel">
+            </div>
+        </div>
+    </form>    
+
+
+ <hr style="width: 100%; color: black; height: 2px; background-color:black;" />
+ <div class="row">
+      <div class="col-md-6">
+        <a href="{% url 'hello:requests' %}">requests</a>
+     </div>
+ </div>
+ 
+{% endblock content %}

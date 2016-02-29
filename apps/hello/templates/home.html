@@ -1,32 +1,45 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
 {% block content %}
 <h1>42 Coffee Cups Test Assignment</h1>
 <div class="row">
      {% if person %}
-     <div class="col-md-6">
+     <div class="col-md-5">
           <ul class="list-group">
                <li class="list-group-item"></li>
-              <li class="list-group-item">Name: {{ person.name }}</li>
+               <li class="list-group-item">Name: {{ person.name }}</li>
                <li class="list-group-item">Surname: {{ person.surname }}</li>
                <li class="list-group-item">Date of birth: {{ person.date_of_birth }}</li>
-               <li class="list-group-item">Bio: {{ person.bio }}</li>
+               <li class="list-group-item">Photo:</li>
+               <li class="list-group-item"><img src="{% static 'screenshot.png' %}" width="200" height="200"
+                      alt="Towel test photo"></li>
           </ul>
      </div>      
-     <div class="col-md-6">
+     <div class="col-md-5">
           <ul class="list-group">
                <li class="list-group-item"><strong>Contacts</strong></li>
                <li class="list-group-item">Email: {{ person.email }}</li>
                <li class="list-group-item">Jabber: {{ person.jabber }}</li>
                <li class="list-group-item">Skype id: {{ person.skype_id }}</li>
                <li class="list-group-item">Other contacts: {{ person.other }}</li>
+               {% if not person.other %}
+               <li class="list-group-item"></li>
+               <li class="list-group-item"></li>
+               <li class="list-group-item"></li>
+               <li class="list-group-item"></li>
+               {% endif %}
+               <li class="list-group-item">Bio: {{ person.bio }}</li>
           </ul>
+     </div>
+     <div class="col-md-2">
+           <a href="{% url 'hello:requests' %}">login</a>
      </div>     
  </div>
  <hr style="width: 100%; color: black; height: 2px; background-color:black;" />
  <div class="row">
       <div class="col-md-6">
-        <a href="{% url 'hello:requests' %}">requests</a>
+        <a href="#">requests</a>
      </div>
  </div>
  {% else %}
