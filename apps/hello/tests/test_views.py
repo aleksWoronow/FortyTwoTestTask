@@ -67,12 +67,26 @@ class HomePageTest(TestCase):
         # Check that two person in db
         all_persons = Person.objects.all()
         self.assertEquals(len(all_persons), 2)
+        first_person = all_persons[0]
 
         # home page displays only the first record: Aleks
         response = self.client.get(reverse('hello:home'))
-        self.assertEquals(response.context['person'].name, 'Aleks')
+        self.assertEquals(response.context['person'], first_person)
         self.assertContains(response, 'Woronow')
         self.assertNotContains(response, 'Ivan')
+
+    def test_home_page_if_no_person(self):
+        """
+        Test check that home page displays "Contact data no yet"
+        if db has not person instance
+        """
+        # Delete all the Person instance
+        Person.objects.all().delete()
+
+        # home page displays "Contact data no yet"
+        response = self.client.get(reverse('hello:home'))
+        self.assertEquals(response.context['person'], None)
+        self.assertContains(response, 'Contact data no yet')
 
     def test_home_page_returns_correct_html(self):
         """Test home page returns correct html"""
