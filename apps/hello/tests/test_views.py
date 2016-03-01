@@ -153,3 +153,16 @@ class RequestAjaxTest(TestCase):
         self.assertIn('GET', response.content)
         self.assertIn('path', response.content)
         self.assertIn('/', response.content)
+
+
+class FormPageTest(TestCase):
+    def test_form_page_view(self):
+        """Test view form_page"""
+        response = self.client.get(reverse('hello:form'))
+        self.assertEqual(response.status_code, 302)
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('hello:form'))
+        self.assertIn('name', response.content)
+        self.assertIn('surname', response.content)
+        self.assertIn('email', response.content)
