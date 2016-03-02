@@ -21,7 +21,7 @@ urlpatterns = patterns(
         auth_views.login,
         {'authentication_form': LoginForm},
         name='login'),
-    url(r'^logout/$', auth_views.logout, name='logout'),  
+    url(r'^logout/$', auth_views.logout, name='logout'),
 
     url(r'^admin/', include(admin.site.urls)),
 )
