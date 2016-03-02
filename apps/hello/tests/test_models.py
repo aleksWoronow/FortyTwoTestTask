@@ -64,7 +64,6 @@ class PersonModelTests(TestCase):
         self.assertEquals(only_person.skype_id, 'aleks_woronow')
         self.assertEquals(only_person.date_of_birth, date(2016, 2, 25))
         self.assertEquals(only_person.bio, 'I was born ...')
-        self.assertEquals(str(only_person), 'Woronow Aleks')
 
 
 class RequestStoreTest(TestCase):
