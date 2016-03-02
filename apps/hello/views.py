@@ -46,11 +46,36 @@ def request_ajax(request):
 @not_record_request
 def form_page(request):
     person = Person.objects.first()
-    form = PersonForm(request.POST or None, instance=person)
 
-    if request.POST:
+    if request.method == 'POST':
+        form = PersonForm(request.POST, request.FILES)
+
         if form.is_valid():
-            form.save()
+            name = form.cleaned_data.get('name')
+            surname = form.cleaned_data.get('surname')
+            date_of_birth = form.cleaned_data.get('date_of_birth')
+            bio = form.cleaned_data.get('bio')
+            email = form.cleaned_data.get('email')
+            jabber = form.cleaned_data.get('jabber')
+            skype_id = form.cleaned_data.get('skype_id')
+            other = form.cleaned_data.get('other')
+            image = form.cleaned_data.get('image')
+
+            if request.POST.get('image-clear') is None:
+                if image is None:
+                    image = person.image
+
+            person = Person(id=person.id,
+                            name=name,
+                            surname=surname,
+                            date_of_birth=date_of_birth,
+                            bio=bio,
+                            email=email,
+                            jabber=jabber,
+                            skype_id=skype_id,
+                            other=other,
+                            image=image)
+            person.save()
 
             if request.is_ajax():
                 if getattr(settings, 'DEBUG', False):
@@ -73,5 +98,7 @@ def form_page(request):
 
                 return HttpResponseBadRequest(json.dumps(errors_dict),
                                               content_type="application/json")
+    else:
+        form = PersonForm(instance=person)
 
     return render(request, 'person_form.html', {'form': form})

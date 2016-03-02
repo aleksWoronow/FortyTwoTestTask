@@ -10,7 +10,7 @@ from .models import Person
 
 class CalendarWidget(forms.DateInput):
     class Media:
-        js = ('http://code.jquery.com/ui/1.11.0/jquery-ui.js',)
+        js = ('https://code.jquery.com/ui/1.11.0/jquery-ui.js',)
 
     def __init__(self, attrs={}):
         super(CalendarWidget, self).__init__(
@@ -21,15 +21,16 @@ class PersonForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(PersonForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name != 'date_of_birth':
+            if field_name != 'image' and field_name != 'date_of_birth':
                 field.widget.attrs['class'] = 'form-control'
 
     class Meta:
         model = Person
         fields = ['name', 'surname', 'date_of_birth', 'bio',
-                  'email', 'jabber', 'skype_id', 'other']
+                  'email', 'jabber', 'skype_id', 'other', 'image']
         widgets = {
-            'date_of_birth': CalendarWidget()
+            'date_of_birth': CalendarWidget(),
+            'image': forms.FileInput()
         }
 
     class Media:
