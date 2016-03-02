@@ -172,7 +172,7 @@ class FormPageTest(TestCase):
         # after authentication
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('hello:form'))
-        self.assertTemplateUsed(response, 'form.html')
+        self.assertTemplateUsed(response, 'person_form.html')
 
     def test_form_page_edit_data(self):
         """Test check edit data at form page."""

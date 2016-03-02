@@ -74,4 +74,4 @@ def form_page(request):
                 return HttpResponseBadRequest(json.dumps(errors_dict),
                                               content_type="application/json")
 
-    return render(request, 'form.html', {'form': form})
+    return render(request, 'person_form.html', {'form': form})

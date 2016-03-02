@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form class="form-horizontal" method="post" action="{% url 'login' %}">
+{% csrf_token %}
+  <fieldset>
+   <legend>Conact login form</legend>
+    {{ form.as_div }}
+    <button type="submit" class="btn btn-primary">Log in</button>
+        <input type="hidden" name="next" value="{% url 'hello:form' %}" />
+      </div>    
+    </div>
+  </fieldset>
+</form>
+
+<script type="text/javascript">
+document.getElementById('id_username').focus();
+</script>
+{% endblock content%}

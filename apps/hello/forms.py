@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.forms import ModelForm
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 
 from .models import Person
 
@@ -33,3 +34,21 @@ class PersonForm(ModelForm):
 
     class Media:
         js = ('js/change_person.js',)
+
+
+class LoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+    def as_div(self):
+        return self._html_output(
+            normal_row='''<div class="form-group">
+                           <div class="col-sm-2 control-label">%(label)s</div>
+                           <div class="col-sm-4">%(field)s%(help_text)s</div>
+                         </div>''',
+            error_row='%s',
+            row_ender='</div>',
+            help_text_html=' <p class="help-block">%s</p>',
+            errors_on_separate_row=True)

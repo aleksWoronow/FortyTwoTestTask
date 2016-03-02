@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 from .import views
 
+
 urlpatterns = patterns(
     '',
     url(r'^$', views.home_page, name='home'),
