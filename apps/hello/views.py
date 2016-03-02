@@ -85,7 +85,7 @@ def form_page(request):
                 return HttpResponse(json.dumps(list_pers),
                                     content_type="application/json")
             else:
-                return redirect('contact:success')
+                return redirect('hello:success')
         else:
             if request.is_ajax():
                 if getattr(settings, 'DEBUG', False):
