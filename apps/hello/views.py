@@ -51,18 +51,27 @@ def form_page(request):
     if request.POST:
         if form.is_valid():
             form.save()
+
             if request.is_ajax():
                 if getattr(settings, 'DEBUG', False):
                     time.sleep(3)
-                msg = 'Changes have been saved'
-                return HttpResponse(json.dumps({'msg': msg}))
+
+                list_pers = serializers.serialize("json", [person, ])
+                return HttpResponse(json.dumps(list_pers),
+                                    content_type="application/json")
             else:
-                return redirect('hello:success')
+                return redirect('contact:success')
         else:
             if request.is_ajax():
                 if getattr(settings, 'DEBUG', False):
                     time.sleep(2)
-                errors = json.dumps(form.errors)
-                return HttpResponse(errors)
+                errors_dict = {}
+                if form.errors:
+                    for error in form.errors:
+                        e = form.errors[error]
+                        errors_dict[error] = unicode(e)
+
+                return HttpResponseBadRequest(json.dumps(errors_dict),
+                                              content_type="application/json")
 
     return render(request, 'form.html', {'form': form})

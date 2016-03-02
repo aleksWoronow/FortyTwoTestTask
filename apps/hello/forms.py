@@ -29,7 +29,6 @@ class PersonForm(ModelForm):
                   'email', 'jabber', 'skype_id', 'other']
         widgets = {
             'date_of_birth': CalendarWidget()
-          
         }
 
     class Media:

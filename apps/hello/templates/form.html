@@ -2,7 +2,6 @@
 {% load staticfiles %}
 
 {% block content %}
-<h1>42 Coffee Cups Test Assignment</h1>
 <div class="row">
     <form class="form-horizontal" id="person-form" action="{% url 'hello:form' %}" method="post">{% csrf_token %}
       {{ form.media }}
@@ -78,14 +77,23 @@
             </div>
         </div>
     </div>    
-        <div class="row">
-            <div class="col-md-6">
-                <input class="btn btn-default" type="submit" value="Save">
-                <input class="btn btn-default" type="submit" value="Cancel">
-            </div>
+       <div class="row">
+       <div id="loading" style="display:none;">
+            <span id="load_text">loading...</span>
         </div>
-    </form>    
-
+        <div id="form_ajax" style="display:none;">
+            <span>Changes have been save.</span>
+        </div>
+        <div id="form_ajax_error" style="display:none;">
+            <span>Can not submit data due to errors.</span>
+        </div>
+  </div>       
+  <div class="row">
+     <button class="btn btn btn-primary" type="submit">Save</button>
+     <button class="btn btn btn-primary" id='cancel' type="reset">Cancel</button>
+   </div>    
+</form>
+<div id="form-loading"></div>
 
  <hr style="width: 100%; color: black; height: 2px; background-color:black;" />
  <div class="row">
