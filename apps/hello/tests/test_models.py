@@ -1,14 +1,34 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import date
+from PIL import Image as Img
+import StringIO
+
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.contrib.auth import get_user_model
-
-from datetime import date
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from ..models import Person, RequestStore
+
+
+# create image file for test
+def get_temporary_image():
+        output = StringIO.StringIO()
+        size = (1200, 700)
+        color = (255, 0, 0, 0)
+        image = Img.new("RGBA", size, color)
+        image.save(output, format='JPEG')
+        image_file = InMemoryUploadedFile(output,
+                                          None,
+                                          'test.jpg',
+                                          'jpeg',
+                                          output.len,
+                                          None)
+        image_file.seek(0)
+        return image_file
 
 
 class PersonModelTests(TestCase):
@@ -65,6 +85,23 @@ class PersonModelTests(TestCase):
         self.assertEquals(only_person.date_of_birth, date(2016, 2, 25))
         self.assertEquals(only_person.bio, 'I was born ...')
         self.assertEquals(str(only_person), 'Woronow Aleks')
+
+    def test_person_model_image(self):
+        """
+        Test check that overwritten save method maintaining aspect ratio
+        and reduce image to <= 200*200.
+        """
+
+        # save image file
+        person = Person.objects.get(id=1)
+        person.image = get_temporary_image()
+        person.save()
+
+        # check that height and width <= 200
+        self.assertTrue(person.height <= 200)
+        self.assertTrue(person.width <= 200)
+
+        person.delete()
 
 
 class RequestStoreTest(TestCase):

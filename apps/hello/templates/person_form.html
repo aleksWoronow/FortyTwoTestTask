@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="row">
+    <form class="form-horizontal" id="person-form" action="{% url 'hello:form' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+      {{ form.media }}
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="id_name" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-8">
+                  {{ form.name.errors }}
+                  {{ form.name }}
+                </div>
+            </div>
+            <div class="form-group">
+               <label for="id_surname" class="col-sm-2 control-label">Surname</label>
+                <div class="col-sm-8">
+                  {{ form.surname.errors }} 
+                  {{ form.surname }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_date_of_birth" class="col-sm-2 control-label">Date of birth</label>
+                <div class="col-sm-8">
+                  {{ form.date_of_birth.errors }}
+                  {{ form.date_of_birth }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_photo" class="col-sm-2 control-label">Photo</label>
+                <div class="col-sm-8">
+                   {{ form.image }}
+              <div id="error_{{ form.image.label|lower}}" class="has-error"></div>
+            </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                   <img class="img-thumbnail" src="{% if form.image.value %}{{ form.image.value.url }}{% endif %}" alt="Towel test photo">
+                </div>
+            </div>
+       </div>         
+       <div class="col-md-5">
+            <div class="form-group">
+                <label for="id_email" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                  {{ form.email.errors }}
+                  {{ form.email }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_jabber" class="col-sm-2 control-label">Jabber</label>
+                <div class="col-sm-10">
+                  {{ form.jabber }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_skype_id" class="col-sm-2 control-label">Skype id</label>
+                <div class="col-sm-10">
+                 {{ form.skype_id.errors }} 
+                 {{ form.skype_id }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_other" class="col-sm-2 control-label">Other contacts</label>
+                <div class="col-sm-10">
+                  {{ form.other.errors }}  
+                  {{ form.other }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_bio" class="col-sm-2 control-label">Bio</label>
+                <div class="col-sm-10">
+                 {{ form.bio.errors }}
+                 {{ form.bio }}
+                </div>
+            </div>
+        </div>
+    </div>    
+       <div class="row">
+       <div id="loading" style="display:none;">
+            <span id="load_text">loading...</span>
+        </div>
+        <div id="form_ajax" style="display:none;">
+            <span>Changes have been save.</span>
+        </div>
+        <div id="form_ajax_error" style="display:none;">
+            <span>Can not submit data due to errors.</span>
+        </div>
+  </div>       
+  <div class="row">
+     <button class="btn btn btn-primary" type="submit">Save</button>
+     <button class="btn btn btn-primary" id='cancel' type="reset">Cancel</button>
+   </div>    
+</form>
+<div id="form-loading"></div>
+
+ <hr style="width: 100%; color: black; height: 2px; background-color:black;" />
+ <div class="row">
+      <div class="col-md-6">
+        <a href="{% url 'hello:requests' %}">requests</a>
+     </div>
+ </div>
+ 
+{% endblock content %}
+{% block script %}
+     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js"></script>
+     <script src="https://jqueryvalidation.org/files/dist/additional-methods.min.js"></script>
+{% endblock script %}

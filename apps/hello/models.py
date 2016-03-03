@@ -2,11 +2,14 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
+from PIL import Image as Img
+import StringIO
+import os
 
 
-@python_2_unicode_compatible
 class Person(models.Model):
     name = models.CharField('name', max_length=250)
     surname = models.CharField('surname', max_length=250)
@@ -18,12 +21,41 @@ class Person(models.Model):
                                 blank=True,
                                 max_length=250)
     other = models.TextField('other contact', blank=True)
+    image = models.ImageField('photo',
+                              blank=True,
+                              null=True,
+                              upload_to='photo/',
+                              height_field='height',
+                              width_field='width')
+    height = models.PositiveIntegerField(default=1, null=True, blank=True)
+    width = models.PositiveIntegerField(default=1,  null=True, blank=True)
 
-    def __str__(self):
+    def save(self, *args, **kwargs):
+        if self.image:
+            image = Img.open(StringIO.StringIO(self.image.read()))
+            image.thumbnail((200, 200), Img.ANTIALIAS)
+            output = StringIO.StringIO()
+            image.save(output, format='JPEG', quality=75)
+            output.seek(0)
+            self.image = InMemoryUploadedFile(output,
+                                              'ImageField',
+                                              "%s" % self.image.name,
+                                              'image/jpeg',
+                                              output.len,
+                                              None)
+        super(Person, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+
+        super(Person, self).delete(*args, **kwargs)
+
+    def __unicode__(self):
         return '%s %s' % (self.surname, self.name)
 
 
-@python_2_unicode_compatible
 class RequestStore(models.Model):
     path = models.CharField(max_length=250)
     method = models.CharField(max_length=10)
@@ -33,7 +65,7 @@ class RequestStore(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     new_request = models.PositiveIntegerField(default=1)
 
-    def __str__(self):
+    def __unicode__(self):
         return "%s - %s" % (self.path, self.method)
 
     class Meta:
