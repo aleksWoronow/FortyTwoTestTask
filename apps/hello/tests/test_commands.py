@@ -17,7 +17,7 @@ class CommandsTestCase(TestCase):
         call_command('showmodels', stdout=out, stderr=out)
 
         # check number of objects model Person is 0
-        self.assertIn('Person - 0', out.getvalue())
+        self.assertIn('Person - 1', out.getvalue())
         self.assertIn('error:', out.getvalue())
 
         Person.objects.create(name='Ivan',
