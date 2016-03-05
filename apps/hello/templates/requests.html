@@ -4,10 +4,18 @@
 {% block title %} {% endblock title %}
 
 {% block content %}
-<h3>Requests</h3>
+<div class="row">
+    <div class="col-md-6">
+        <ol class="breadcrumb" style="margin-bottom: 5px;">
+          <li><a href="{% url 'hello:home' %}">Home</a></li>
+           <li class="active">Request</li>
+        </ol>
+    </div>
+</div>
 <div class="row">
      <div class="col-md-6">
         <table id="request" class="table table-bordered">
+            <caption>Requests</caption>
             <thead>
                 <tr>
                     <th>Path</th>
