@@ -29,6 +29,8 @@ $(document).ready(function(){
         block_form();
     }
     
+
+    
     var validator = $('#person-form').validate({
         rules:{
             focusInvalid: false,
@@ -66,8 +68,25 @@ $(document).ready(function(){
                 contentType: false,
                 processData: false,
                 beforeSend: beforeSendHandler,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    //Upload Progress
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                        var percentComplete = (evt.loaded / evt.total) * 100; 
+                        $('div.progress > div.progress-bar')
+                                .css({ "width": percentComplete + "%" });
+                        }
+                    }, false);
+                 
+                    
+                    return xhr;
+                },
             })
-            .done(function(){
+            .done(function(e){
+                var new_person = JSON.parse(e);
+                var image_link = new_person[0].fields.image;
+                $('#personImage').attr('src', '/uploads/'+ image_link);
                 unblock_form();
                 $("#form_ajax").show();
                 
@@ -75,6 +94,7 @@ $(document).ready(function(){
                 setTimeout(function() {
                     $("#form_ajax").hide();
                 }, 5000);
+                
            })
             .fail(function(data){
                 unblock_form();
