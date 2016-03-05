@@ -12,6 +12,7 @@ from PIL import Image as Img
 
 from hello.storage import HelloStorage
 
+
 class Person(models.Model):
     name = models.CharField('name', max_length=250)
     surname = models.CharField('surname', max_length=250)

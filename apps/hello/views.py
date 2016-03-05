@@ -48,34 +48,16 @@ def form_page(request):
     person = Person.objects.first()
 
     if request.method == 'POST':
-        form = PersonForm(request.POST, request.FILES)
+        form = PersonForm(request.POST, request.FILES, instance=person)
 
         if form.is_valid():
-            name = form.cleaned_data.get('name')
-            surname = form.cleaned_data.get('surname')
-            date_of_birth = form.cleaned_data.get('date_of_birth')
-            bio = form.cleaned_data.get('bio')
-            email = form.cleaned_data.get('email')
-            jabber = form.cleaned_data.get('jabber')
-            skype_id = form.cleaned_data.get('skype_id')
-            other = form.cleaned_data.get('other')
-            image = form.cleaned_data.get('image')
+            new_person = form.save(commit=False)
 
             if request.POST.get('image-clear') is None:
-                if image is None:
-                    image = person.image
+                if new_person.image is None:
+                    new_person.image = person.image
 
-            person = Person(id=person.id,
-                            name=name,
-                            surname=surname,
-                            date_of_birth=date_of_birth,
-                            bio=bio,
-                            email=email,
-                            jabber=jabber,
-                            skype_id=skype_id,
-                            other=other,
-                            image=image)
-            person.save()
+            new_person.save()
 
             if request.is_ajax():
                 if getattr(settings, 'DEBUG', False):
