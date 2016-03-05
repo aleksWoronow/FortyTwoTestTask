@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from django.template import Context, loader
 
 from .models import Person
 
@@ -34,7 +35,7 @@ class PersonForm(ModelForm):
         }
 
     class Media:
-        js = ('js/change_person.js',)
+        js = ('js/change_person_data.js',)
 
 
 class LoginForm(AuthenticationForm):
@@ -44,12 +45,18 @@ class LoginForm(AuthenticationForm):
             field.widget.attrs['class'] = 'form-control'
 
     def as_div(self):
+        normal_attr = Context({
+            'class_label': 'col-sm-2 control-label',
+            'class_input': 'col-sm-4',
+            'class_help_text': 'help-block'})
+
+        normal_tmpl = loader.get_template('form/normal_row.html')
+        ender_tmpl = loader.get_template('form/row_ender.html')
+        help_text_tmpl = loader.get_template('form/help_text.html')
+
         return self._html_output(
-            normal_row='''<div class="form-group">
-                           <div class="col-sm-2 control-label">%(label)s</div>
-                           <div class="col-sm-4">%(field)s%(help_text)s</div>
-                         </div>''',
+            normal_row=normal_tmpl.render(normal_attr),
             error_row='%s',
-            row_ender='</div>',
-            help_text_html=' <p class="help-block">%s</p>',
+            row_ender=ender_tmpl.render(Context()),
+            help_text_html=help_text_tmpl.render(normal_attr),
             errors_on_separate_row=True)

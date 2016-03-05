@@ -100,12 +100,13 @@ class HomePageTest(TestCase):
 
 class RequestViewTest(TestCase):
     def setUp(self):
+        self.factory = RequestFactory()
         self.user = get_user_model().objects.get(id=1)
 
     def test_request_view(self):
         """Test request_view"""
 
-        request = self.client.get(reverse('hello:requests'))
+        request = self.factory.get(reverse('hello:requests'))
         request.user = AnonymousUser()
         response = request_view(request)
 
@@ -116,8 +117,17 @@ class RequestViewTest(TestCase):
         self.assertIn('Method', response.content)
         self.assertIn('Date', response.content)
 
-        # if request from anonymoususer new_request = 1
+    def test_request_view_visit_anonymoususer(self):
+        """
+        Test check request_view return RequestStore instances
+        that have new_request = 1 if request from anonymoususer
+        """
         self.client.get(reverse('hello:home'))
+        request = self.factory.get(reverse('hello:requests'))
+        request.user = AnonymousUser()
+        request_view(request)
+
+        # now new_request = 1
         all_req = RequestStore.objects.all()
         self.assertEquals(len(all_req), 1)
         only_req = all_req[0]
@@ -125,10 +135,17 @@ class RequestViewTest(TestCase):
         self.assertEquals(only_req.method, 'GET')
         self.assertEquals(only_req.new_request, 1)
 
-        # if request from authenticated user new_request = 0
+    def test_request_view_visit_authenticated_user(self):
+        """
+        Test check request_view return RequestStore instances
+        that have new_request = 0 if request from authenticated user
+        """
+        self.client.get(reverse('hello:home'))
+        request = self.factory.get(reverse('hello:requests'))
         request.user = self.user
-        response = request_view(request)
+        request_view(request)
 
+        # now new_request = 0
         all_req = RequestStore.objects.all()
         self.assertEquals(len(all_req), 1)
         only_req = all_req[0]
@@ -205,10 +222,17 @@ class FormPageTest(TestCase):
         self.assertIn('ivanov@yandex.ru', response.content)
         self.assertIn('iv@jabb.com', response.content)
 
+    def test_form_page_edit_data_to_wrong(self):
+        """Test check edit data at form page to wrong data."""
+
         # check enter empty name and invalid data_of_birth, email
-        data['name'] = ''
-        data['date_of_birth'] = 200
-        data['email'] = 'ivan@'
+        self.client.login(username='admin', password='admin')
+
+        # edit data by form page
+        data = dict(name='', surname='Ivanov',
+                    date_of_birth='date',
+                    bio='', email='ivanovyandex.ru',
+                    jabber='iv@jabb.com')
 
         response = self.client.post(reverse('hello:form'), data,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
@@ -221,4 +245,4 @@ class FormPageTest(TestCase):
 
         # data in db did not change
         edit_person = Person.objects.first()
-        self.assertEqual('Ivan', edit_person.name)
+        self.assertEqual(self.person.name, edit_person.name)

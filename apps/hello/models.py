@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import StringIO
+import os
+
 from django.db import models
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image as Img
-import StringIO
-import os
+
+from hello.storage import HelloStorage
 
 
 class Person(models.Model):
@@ -25,6 +28,7 @@ class Person(models.Model):
                               blank=True,
                               null=True,
                               upload_to='photo/',
+                              storage=HelloStorage(),
                               height_field='height',
                               width_field='width')
     height = models.PositiveIntegerField(default=1, null=True, blank=True)
@@ -37,12 +41,14 @@ class Person(models.Model):
             output = StringIO.StringIO()
             image.save(output, format='JPEG', quality=75)
             output.seek(0)
+
             self.image = InMemoryUploadedFile(output,
                                               'ImageField',
                                               "%s" % self.image.name,
                                               'image/jpeg',
                                               output.len,
                                               None)
+
         super(Person, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
