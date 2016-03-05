@@ -21,21 +21,16 @@ def get_temporary_image():
         color = (255, 0, 0, 0)
         image = Img.new("RGBA", size, color)
         image.save(output, format='JPEG')
-        image_file = InMemoryUploadedFile(output,
-                                          None,
-                                          'test.jpg',
-                                          'jpeg',
-                                          output.len,
-                                          None)
+        image_file = InMemoryUploadedFile(
+            output, None, 'test.jpg', 'jpeg', output.len, None)
         image_file.seek(0)
         return image_file
 
 
 class PersonModelTests(TestCase):
-    def test_person_model(self):
+    def test_person_model_blank_fields_validation(self):
         """
-        Test check validation person model
-        and upload initial_data to the database
+        Test check validation blank fields person model
         """
         person = Person()
 
@@ -43,19 +38,25 @@ class PersonModelTests(TestCase):
         with self.assertRaises(ValidationError) as err:
             person.full_clean()
         err_dict = err.exception.message_dict
-        self.assertEquals(err_dict['name'][0],
-                          Person._meta.get_field('name').
-                          error_messages['blank'])
-        self.assertEquals(err_dict['surname'][0],
-                          Person._meta.get_field('surname').
-                          error_messages['blank'])
-        self.assertEquals(err_dict['email'][0],
-                          Person._meta.get_field('email').
-                          error_messages['blank'])
-        self.assertEquals(err_dict['date_of_birth'][0],
-                          Person._meta.get_field('date_of_birth').
-                          error_messages['null'])
+        self.assertEquals(
+            err_dict['name'][0],
+            Person._meta.get_field('name').error_messages['blank'])
+        self.assertEquals(
+            err_dict['surname'][0],
+            Person._meta.get_field('surname').error_messages['blank'])
+        self.assertEquals(
+            err_dict['email'][0],
+            Person._meta.get_field('email').error_messages['blank'])
+        self.assertEquals(
+            err_dict['date_of_birth'][0],
+            Person._meta.get_field('date_of_birth').
+            error_messages['null'])
 
+    def test_person_model_email_date_field_validation(self):
+        """
+        Test check validation email and date fields person model
+        """
+        person = Person()
         # test model email and date field validation
         person.email = 'aleks@'
         person.jabber = '42cc'
@@ -71,6 +72,10 @@ class PersonModelTests(TestCase):
                       error_messages['invalid'].format()[12:],
                       err_dict['date_of_birth'][0])
 
+    def test_person_model_initial_data(self):
+        """
+        Test check that initial_data is in the database
+        """
         # now check we can find initial_data in the database
         all_persons = Person.objects.all()
         self.assertEquals(len(all_persons), 1)
