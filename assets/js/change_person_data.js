@@ -83,7 +83,10 @@ $(document).ready(function(){
                     return xhr;
                 },
             })
-            .done(function(){
+            .done(function(e){
+                var new_person = JSON.parse(e);
+                var image_link = new_person[0].fields.image;
+                $('#personImage').attr('src', '/uploads/'+ image_link);
                 unblock_form();
                 $("#form_ajax").show();
                 
@@ -91,6 +94,7 @@ $(document).ready(function(){
                 setTimeout(function() {
                     $("#form_ajax").hide();
                 }, 5000);
+                
            })
             .fail(function(data){
                 unblock_form();

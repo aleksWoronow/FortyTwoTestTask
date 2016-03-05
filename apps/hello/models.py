@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import StringIO
+import os
+
 from django.db import models
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image as Img
-import StringIO
-import os
 
+from hello.storage import HelloStorage
 
 class Person(models.Model):
     name = models.CharField('name', max_length=250)
@@ -25,6 +27,7 @@ class Person(models.Model):
                               blank=True,
                               null=True,
                               upload_to='photo/',
+                              storage=HelloStorage(),
                               height_field='height',
                               width_field='width')
     height = models.PositiveIntegerField(default=1, null=True, blank=True)
