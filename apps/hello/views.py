@@ -43,7 +43,6 @@ def request_ajax(request):
 
 
 @login_required
-@not_record_request
 def form_page(request):
     person = Person.objects.first()
 
