@@ -101,7 +101,7 @@ class PersonModelTests(TestCase):
         self.assertTrue(person.height <= 200)
         self.assertTrue(person.width <= 200)
 
-        person.delete()
+        person.image.delete()
 
 
 class RequestStoreTest(TestCase):

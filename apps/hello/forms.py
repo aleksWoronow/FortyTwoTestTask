@@ -34,7 +34,7 @@ class PersonForm(ModelForm):
         }
 
     class Media:
-        js = ('js/change_person.js',)
+        js = ('js/change_person_data.js',)
 
 
 class LoginForm(AuthenticationForm):

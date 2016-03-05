@@ -29,6 +29,8 @@ $(document).ready(function(){
         block_form();
     }
     
+
+    
     var validator = $('#person-form').validate({
         rules:{
             focusInvalid: false,
@@ -66,6 +68,20 @@ $(document).ready(function(){
                 contentType: false,
                 processData: false,
                 beforeSend: beforeSendHandler,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    //Upload Progress
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                        var percentComplete = (evt.loaded / evt.total) * 100; 
+                        $('div.progress > div.progress-bar')
+                                .css({ "width": percentComplete + "%" });
+                        }
+                    }, false);
+                 
+                    
+                    return xhr;
+                },
             })
             .done(function(){
                 unblock_form();

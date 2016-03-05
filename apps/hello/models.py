@@ -37,12 +37,14 @@ class Person(models.Model):
             output = StringIO.StringIO()
             image.save(output, format='JPEG', quality=75)
             output.seek(0)
+
             self.image = InMemoryUploadedFile(output,
                                               'ImageField',
                                               "%s" % self.image.name,
                                               'image/jpeg',
                                               output.len,
                                               None)
+
         super(Person, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
