@@ -139,7 +139,6 @@ class RequestViewTest(TestCase):
 
 class RequestAjaxTest(TestCase):
     def test_request_ajax_view(self):
-
         """Test request ajax view"""
         request = self.client.get(reverse('hello:home'))
         request = self.client.get(reverse('hello:requests_ajax'),
@@ -152,6 +151,51 @@ class RequestAjaxTest(TestCase):
         self.assertIn('method', response.content)
         self.assertIn('GET', response.content)
         self.assertIn('path', response.content)
+        self.assertIn('/', response.content)
+
+    def test_request_ajax_content_empty_db(self):
+        """
+        Test check that request_ajax view returns
+        empty response when transition to request_view page.
+        """
+
+        response = self.client.get(reverse('hello:requests_ajax'),
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        # check that db is empty
+        request_store_count = RequestStore.objects.count()
+        self.assertGreaterEqual(request_store_count, 0)
+        # check response is empty too
+        self.assertIn('0', response.content)
+        self.assertIn('[]', response.content)
+
+    def test_request_ajax_content_record_db_more_10(self):
+        """
+        Test check that request_ajax view returns 10 objects
+        when in db more than 10 records.
+        """
+
+        # create 15 records to db
+        for i in range(1, 15):
+            path = '/test%s' % i
+            method = 'GET'
+            RequestStore.objects.create(path=path, method=method)
+
+        self.client.get(reverse('hello:home'))
+        request_store_count = RequestStore.objects.count()
+        self.assertGreaterEqual(request_store_count, 1)
+
+        # check number of objects in db
+        req_list = RequestStore.objects.count()
+        self.assertEqual(req_list, i+1)
+
+        # check that 10 objects in response
+        response = self.client.get(reverse('hello:requests_ajax'),
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(10, response.content.count('pk'))
+        self.assertEqual(10, response.content.count('GET'))
+        self.assertNotIn('/test0', response.content)
+        self.assertNotIn('/test5', response.content)
+        self.assertIn('/test6', response.content)
         self.assertIn('/', response.content)
 
 
