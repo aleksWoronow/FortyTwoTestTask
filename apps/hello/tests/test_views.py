@@ -2,15 +2,28 @@
 from __future__ import unicode_literals
 
 from datetime import date
+import StringIO
 
 from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from ..views import home_page, request_view, request_ajax
 from ..models import Person, RequestStore
+from .test_models import get_temporary_image
+
+
+# create text file for test
+def get_temporary_text_file(name):
+    io = StringIO.StringIO()
+    io.write('test')
+    text_file = InMemoryUploadedFile(
+        io, None, name, 'text', io.len, None)
+    text_file.seek(0)
+    return text_file
 
 
 class HomePageViewTest(TestCase):
@@ -156,7 +169,6 @@ class RequestViewTest(TestCase):
 
 class RequestAjaxTest(TestCase):
     def test_request_ajax_view(self):
-
         """Test request ajax view"""
         request = self.client.get(reverse('hello:home'))
         request = self.client.get(reverse('hello:requests_ajax'),
@@ -171,10 +183,60 @@ class RequestAjaxTest(TestCase):
         self.assertIn('path', response.content)
         self.assertIn('/', response.content)
 
+    def test_request_ajax_content_empty_db(self):
+        """
+        Test check that request_ajax view returns
+        empty response when transition to request_view page.
+        """
+
+        response = self.client.get(reverse('hello:requests_ajax'),
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        # check that db is empty
+        request_store_count = RequestStore.objects.count()
+        self.assertGreaterEqual(request_store_count, 0)
+        # check response is empty too
+        self.assertIn('0', response.content)
+        self.assertIn('[]', response.content)
+
+    def test_request_ajax_content_record_db_more_10(self):
+        """
+        Test check that request_ajax view returns 10 objects
+        when in db more than 10 records.
+        """
+
+        # create 15 records to db
+        for i in range(1, 15):
+            path = '/test%s' % i
+            method = 'GET'
+            RequestStore.objects.create(path=path, method=method)
+
+        self.client.get(reverse('hello:home'))
+        request_store_count = RequestStore.objects.count()
+        self.assertGreaterEqual(request_store_count, 1)
+
+        # check number of objects in db
+        req_list = RequestStore.objects.count()
+        self.assertEqual(req_list, i+1)
+
+        # check that 10 objects in response
+        response = self.client.get(reverse('hello:requests_ajax'),
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(10, response.content.count('pk'))
+        self.assertEqual(10, response.content.count('GET'))
+        self.assertNotIn('/test0', response.content)
+        self.assertNotIn('/test5', response.content)
+        self.assertIn('/test6', response.content)
+        self.assertIn('/', response.content)
+
 
 class FormPageTest(TestCase):
     def setUp(self):
         self.person = Person.objects.first()
+        self.data = dict(name='Ivan', surname='Ivanov',
+                         date_of_birth='2016-02-02',
+                         bio='', email='ivanov@yandex.ru',
+                         jabber='iv@jabb.com',
+                         image=get_temporary_image())
 
     def test_form_page_view(self):
         """
@@ -194,15 +256,11 @@ class FormPageTest(TestCase):
     def test_form_page_edit_data(self):
         """Test check edit data at form page."""
 
+        # login on the site
         self.client.login(username='admin', password='admin')
 
-        # edit data by form page
-        data = dict(name='Ivan', surname='Ivanov',
-                    date_of_birth='2016-02-02',
-                    bio='', email='ivanov@yandex.ru',
-                    jabber='iv@jabb.com')
-
-        response = self.client.post(reverse('hello:form'), data,
+        # send new data to server
+        response = self.client.post(reverse('hello:form'), self.data,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
         response = self.client.get(reverse('hello:form'))
@@ -221,20 +279,47 @@ class FormPageTest(TestCase):
         self.assertIn('2016-02-02', response.content)
         self.assertIn('ivanov@yandex.ru', response.content)
         self.assertIn('iv@jabb.com', response.content)
+        self.assertIn('test.jpg', response.content)
+
+    def test_form_page_on_text_file(self):
+        """
+        Test check form_page return error if upload text file.
+        """
+
+        # add to data text file text.txt
+        self.data.update({'image': get_temporary_text_file('text.txt')})
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(reverse('hello:form'), self.data,
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(400, response.status_code)
+        self.assertIn('Upload a valid image. The file you uploaded',
+                      response.content)
+
+        # add to data text file text.jpg
+        self.data.update({'image': get_temporary_text_file('text.jpg')})
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(reverse('hello:form'), self.data,
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(400, response.status_code)
+        self.assertIn('Upload a valid image. The file you uploaded',
+                      response.content)
 
     def test_form_page_edit_data_to_wrong(self):
         """Test check edit data at form page to wrong data."""
 
         # check enter empty name and invalid data_of_birth, email
+        # login on the site
         self.client.login(username='admin', password='admin')
 
-        # edit data by form page
-        data = dict(name='', surname='Ivanov',
-                    date_of_birth='date',
-                    bio='', email='ivanovyandex.ru',
-                    jabber='iv@jabb.com')
+        # edit data with empty name and invalid data_of_birth, email
+        self.data.update({'name': '',
+                          'date_of_birth': 'date',
+                          'email': 'ivanovyandex.ru'})
 
-        response = self.client.post(reverse('hello:form'), data,
+        # send new data to server
+        response = self.client.post(reverse('hello:form'), self.data,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 400)
 
