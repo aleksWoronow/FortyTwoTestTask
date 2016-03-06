@@ -11,11 +11,12 @@ from ..forms import PersonForm
 class FormTest(TestCase):
     def test_form(self):
         """Test form"""
-        form_data = {'name': '',
-                     'surname': '',
-                     'date_of_birth': 'data',
-                     'email': 'aleks.woronow@ya',
-                     'jabber': '42cc@khavr.com'}
+        form_data = {
+            'name': '',
+            'surname': '',
+            'date_of_birth': 'data',
+            'email': 'aleks.woronow@ya',
+            'jabber': '42cc@khavr.com'}
         form = PersonForm(data=form_data)
 
         self.assertEqual(form.is_valid(), False)
