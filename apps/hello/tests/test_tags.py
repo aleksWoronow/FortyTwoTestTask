@@ -39,16 +39,9 @@ class TagAdminLinkTest(TestCase):
         """
         # test edit_link recive instance model that not register admin
         permission = Permission.objects.first()
-        link_permission_one = edit_link(permission)['edit_link']
+        link_permission_one = edit_link(permission)
 
-        self.client.login(username='admin', password='admin')
-        response = self.client.get(link_permission_one)
-        self.assertEqual(
-            '/admin/auth/permission/1/',
-            link_permission_one)
-        self.assertIn(
-            'The page you are looking for could not be found',
-            response.content)
+        self.assertEqual(link_permission_one, None)
 
     def test_edit_link_tag_recive_arg_that_not_instance_model(self):
         """
