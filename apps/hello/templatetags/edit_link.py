@@ -13,10 +13,13 @@ register = template.Library()
 def edit_link(obj):
     if isinstance(obj, models.Model):
         model = ContentType.objects.get_for_model(obj)
-        edit_link = '/admin/%s/%s/%d' %\
+        edit_link = '/admin/%s/%s/%d/' %\
                     (model.app_label, model.model, int(obj.id))
         return {
             'edit_link': edit_link,
         }
+    else:
+        raise TypeError(
+            'Invalide type arg for edit_link, shoud be models.Model instance')
 
     return None
