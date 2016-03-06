@@ -76,3 +76,19 @@ class RequestStore(models.Model):
 
     class Meta:
         ordering = ["-date"]
+
+
+class NoteModel(models.Model):
+    ACTION_TYPE = (
+        (0, 'created'),
+        (1, 'changed'),
+        (2, 'deleted')
+    )
+    model = models.CharField('model', max_length=50)
+    inst = models.CharField('instance', max_length=250)
+    action_type = models.PositiveIntegerField(
+        'action type', max_length=1, choices=ACTION_TYPE)
+
+    def __unicode__(self):
+        return "%s  %s: %s " % (
+            self.model, self.get_action_type_display(), self.inst)

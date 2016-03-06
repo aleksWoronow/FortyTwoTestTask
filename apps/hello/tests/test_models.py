@@ -11,7 +11,7 @@ from django.core.validators import EmailValidator
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from ..models import Person, RequestStore
+from ..models import Person, RequestStore, NoteModel
 
 
 # create image file for test
@@ -144,3 +144,60 @@ class RequestStoreTest(TestCase):
         self.assertEquals(only_request.method, 'GET')
         self.assertEquals(only_request.new_request, 1)
         self.assertEquals(only_request.user, user)
+
+
+class NoteModelTestCase(TestCase):
+    def setUp(self):
+        self.data = dict(model='Person', inst='person', action_type=0)
+
+    def test_notemodel(self):
+        """
+        Test creat, change and delete obbject notemodel.
+        """
+        # create note about person
+        note_person = NoteModel.objects.create(**self.data)
+
+        # take all objects of NoteModel: one - load init fixture, two - test
+        all_note = NoteModel.objects.all()
+        self.assertEqual(len(all_note), 2)
+        only_note = all_note[1]
+        self.assertEqual(only_note.model, note_person.model)
+        self.assertEqual(only_note.action_type, 0)
+
+        # change note about person to requeststore
+        person_note = NoteModel.objects.get(id=note_person.id)
+        person_note.model = 'RequestStore'
+        person_note.inst = 'requeststore'
+        person_note.action_type = 1
+        person_note.save()
+
+        # now note about requeststore action = 1
+        person_note_change = NoteModel.objects.get(model='RequestStore')
+        self.assertEqual(person_note_change.action_type, 1)
+
+        # delete note person
+        NoteModel.objects.all().delete()
+        all_note = NoteModel.objects.all()
+        self.assertEqual(all_note.count(), 0)
+
+    def test_signal_processor(self):
+        """
+        Test signal processor records create,
+        change and delete object.
+        """
+        # check action_type after created object (loaded fixtures) is 0
+        note = NoteModel.objects.get(model='Person')
+        self.assertEqual(note.action_type, 0)
+
+        # check action_type after change object is 1
+        person = Person.objects.first()
+        person.name = 'Change'
+        person.save()
+        note = NoteModel.objects.filter(model='Person').last()
+        self.assertEqual(note.action_type, 1)
+
+        # check record after delete object is 2
+        person = Person.objects.first()
+        person.delete()
+        note = NoteModel.objects.last()
+        self.assertEqual(note.action_type, 2)
