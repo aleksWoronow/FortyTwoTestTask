@@ -13,7 +13,7 @@
     </div>
 </div>
 <div class="row">
-     <div class="col-md-6">
+     <div class="col-md-12">
         <table id="request" class="table table-bordered">
             <caption>Requests</caption>
             <thead>
@@ -21,6 +21,9 @@
                     <th>Path</th>
                     <th>Method</th>
                     <th>Date</th>
+                    <th>Priority</th>
+                    <th>Up</th>
+                    <th>Down</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,4 +33,8 @@
 </div>   
 {% endblock content %}
 
-{% block script %}<script src="{% static 'js/requests.js' %}"></script>{% endblock script %}
+{% block script %}
+    <script src="{% static 'js/requests_ajax.js' %}"></script>
+    <script src="{% static 'js/requests_ajax_priority.js' %}"></script>
+{% endblock script %}
+

@@ -10,9 +10,12 @@ var helloRequest = (function($){
             req_class = 'info';
         }
         items.push('<tr class="' + req_class + '">'
-                    + '<td>' + val.fields.path + '</td>'
+                    + '<td class="path">' + val.fields.path + '</td>'
                     + '<td>' + val.fields.method + '</td>'
                     + '<td>' + val.fields.date + '</td>'
+                    + '<td class="priority">' + val.fields.priority + '</td>'
+                    + '<td class="td_click">Up</td>'
+                    + '<td class="td_click">Down</td>'
                     + '</tr>'
         );
         
@@ -20,7 +23,8 @@ var helloRequest = (function($){
    var title = $('title').text().split(')')[1] || $('title').text();
    var pre_titile = id ? '(' + id + ')' : '';
    $('#request').find('tbody').html(items);
-   $('td').attr('align', 'center');
+   $('td').addClass('text-center');
+   $('th').addClass('text-center');
    $('title').text(pre_titile + title);
 }
 
