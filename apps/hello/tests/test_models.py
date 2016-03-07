@@ -147,11 +147,10 @@ class RequestStoreTest(TestCase):
         self.assertEquals(only_request.priority, 0)
         self.assertEquals(only_request.user, user)
 
-    def test_record_priority_field(self):
+    def test_record_priority_field_default(self):
         """
-        Test record priority field.
+        Test record priority field default.
         """
-
         # pass to home page
         self.client.get(reverse('hello:home'))
         request_store = RequestStore.objects.first()
@@ -162,6 +161,14 @@ class RequestStoreTest(TestCase):
         self.assertEqual(request_store.method, 'GET')
         self.assertEqual(request_store.priority, 0)
 
+    def test_change_record_priority_field(self):
+        """
+        Test check when change priority field.
+        """
+        # pass to home page
+        self.client.get(reverse('hello:home'))
+        request_store = RequestStore.objects.first()
+
         # change priority to 1 and send POST to home page
         request_store.priority = 1
         request_store.save()
@@ -171,16 +178,32 @@ class RequestStoreTest(TestCase):
         # method - 'POST' and priority - 1
         request_store = RequestStore.objects.all()[1]
         self.assertEqual(request_store.method, 'POST')
-        self.assertEqual
 
-        self.client.get(reverse('hello:form'))
+    def test_priority_creating_request_accord_priority_same_as_changed(self):
+        """
+        Test check when change priority field another
+        creating analog request has same priority.
+        """
+
+        # pass to home page
+        self.client.get(reverse('hello:home'))
+        request_store = RequestStore.objects.first()
+
+        # change priority to 1 and send POST to home page
+        request_store.priority = 1
+        request_store.save()
+
+        # pass to home page again
+        self.client.post(reverse('hello:home'))
 
         # check record RequestStore contains:
-        # method - 'GET' and priority - 0
-        request_store = RequestStore.objects.all()[2]
-        self.assertEqual(request_store.method, 'GET')
-        self.assertEqual(request_store.priority, 0)
-        self.assertEqual(request_store.path, '/form/')
+        # method - 'GET' and priority - 1
+        all_requests = RequestStore.objects.all()
+        self.assertEquals(len(all_requests), 2)
+        first_request = all_requests[0]
+        second_request = all_requests[1]
+
+        self.assertEqual(first_request.priority, second_request.priority)
 
 
 class NoteModelTestCase(TestCase):
