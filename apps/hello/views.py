@@ -23,7 +23,6 @@ def home_page(request):
     return render(request, 'home.html', context)
 
 
-@not_record_request
 def request_view(request):
     if request.user.is_authenticated():
         RequestStore.objects.filter(new_request=1).update(new_request=0)
