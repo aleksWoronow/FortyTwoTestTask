@@ -165,20 +165,19 @@ class RequestStoreTest(TestCase):
         # change priority to 1 and send POST to home page
         request_store.priority = 1
         request_store.save()
-        self.client.post(reverse('hello:home'))
+        self.client.post(reverse('hello:form'))
 
         # check record RequestStore contains:
         # method - 'POST' and priority - 1
-        request_store = RequestStore.objects.first()
+        request_store = RequestStore.objects.all()[1]
         self.assertEqual(request_store.method, 'POST')
         self.assertEqual
 
-        
         self.client.get(reverse('hello:form'))
 
         # check record RequestStore contains:
         # method - 'GET' and priority - 0
-        request_store = RequestStore.objects.last()
+        request_store = RequestStore.objects.all()[2]
         self.assertEqual(request_store.method, 'GET')
         self.assertEqual(request_store.priority, 0)
         self.assertEqual(request_store.path, '/form/')

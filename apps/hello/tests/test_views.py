@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from ..views import home_page, request_view, request_ajax
+from ..views import home_page, request_view
 from ..models import Person, RequestStore
 from .test_models import get_temporary_image
 
@@ -170,14 +170,10 @@ class RequestViewTest(TestCase):
 class RequestAjaxTest(TestCase):
     def test_request_ajax_view(self):
         """Test request ajax view"""
-        request = self.client.get(reverse('hello:home'))
-        request = self.client.get(reverse('hello:requests_ajax'),
-                                  HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.client.get(reverse('hello:home'))
+        response = self.client.get(reverse('hello:requests_ajax'),
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
-        def ajax(): return True
-        request.is_ajax = ajax
-
-        response = request_ajax(request)
         self.assertIn('method', response.content)
         self.assertIn('GET', response.content)
         self.assertIn('path', response.content)
@@ -208,7 +204,7 @@ class RequestAjaxTest(TestCase):
         for i in range(1, 15):
             path = '/test%s' % i
             method = 'GET'
-            RequestStore.objects.create(path=path, method=method)
+            RequestStore.objects.create(path=path, method=method, priority=i)
 
         self.client.get(reverse('hello:home'))
         request_store_count = RequestStore.objects.count()
@@ -223,10 +219,38 @@ class RequestAjaxTest(TestCase):
                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(10, response.content.count('pk'))
         self.assertEqual(10, response.content.count('GET'))
-        self.assertNotIn('/test0', response.content)
-        self.assertNotIn('/test5', response.content)
+        self.assertNotIn('/test3', response.content)
+        self.assertNotIn('/test4', response.content)
         self.assertIn('/test6', response.content)
         self.assertIn('/', response.content)
+
+    def test_requests_ajax_change_priority(self):
+        """
+        Test requests_ajax view, changing priority for same requests.
+        """
+        self.client.get(reverse('hello:home'))
+
+        # check request: path - '/', priority - 0
+        all_req = RequestStore.objects.all()
+        self.assertEquals(len(all_req), 1)
+        only_req = all_req[0]
+        self.assertEqual(only_req.path, '/')
+        self.assertEqual(only_req.method, 'GET')
+        self.assertEqual(only_req.priority, 0)
+
+        data = {'path': '/', 'priority': 1}
+        # send new priority
+        self.client.post(
+            reverse('hello:requests_ajax'),
+            data,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        all_req = RequestStore.objects.all()
+        self.assertEquals(len(all_req), 1)
+        only_req = all_req[0]
+        self.assertEquals(only_req.path, '/')
+        self.assertEquals(only_req.method, 'GET')
+        self.assertEquals(only_req.priority, 1)
 
 
 class FormPageTest(TestCase):

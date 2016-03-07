@@ -1,3 +1,6 @@
 .list-group-item {
     border: #fff;
-} 
+}
+.grey {
+    background-color: #808080;
+}
