@@ -189,7 +189,7 @@ class NoteModelTestCase(TestCase):
 
     def test_notemodel(self):
         """
-        Test creat, change and delete obbject notemodel.
+        Test creat, change and delete object notemodel.
         """
         # create note about person
         note_person = NoteModel.objects.create(**self.data)
@@ -217,7 +217,7 @@ class NoteModelTestCase(TestCase):
         all_note = NoteModel.objects.all()
         self.assertEqual(all_note.count(), 0)
 
-    def test_signal_processor(self):
+    def test_signal_processor_creates_entry_db(self):
         """
         Test signal processor records create,
         change and delete object.
@@ -238,3 +238,41 @@ class NoteModelTestCase(TestCase):
         person.delete()
         note = NoteModel.objects.last()
         self.assertEqual(note.action_type, 2)
+
+    def test_processor_not_creates_entry_db_if_delete_inst_NoteModel(self):
+        """
+        Test signal processor not records create,
+        change and delete instance of NoteModel.
+        """
+        # check created object after loaded fixtures
+        all_note = NoteModel.objects.all()
+        self.assertEqual(len(all_note), 1)
+        only_note = all_note[0]
+        self.assertEqual(only_note.model, 'Person')
+
+        # delete object Person
+        only_note.delete()
+
+        # now NoteModel is empty
+        self.assertEqual(NoteModel.objects.count(), 0)
+
+    def test_processor_not_creates_entry_db_if_change_inst_NoteModel(self):
+        """
+        Test signal processor not records change,
+        delete instance of NoteModel.
+        """
+        # check created object after loaded fixtures
+        all_note = NoteModel.objects.all()
+        self.assertEqual(len(all_note), 1)
+        only_note = all_note[0]
+        self.assertEqual(only_note.model, 'Person')
+
+        # change object Person
+        only_note.model = 'RequestStore'
+        only_note.save()
+
+        # now NoteModel has only one instance
+        all_note = NoteModel.objects.all()
+        self.assertEqual(len(all_note), 1)
+        only_note = all_note[0]
+        self.assertEqual(only_note.model, 'RequestStore')
