@@ -20,5 +20,5 @@ class Command(NoArgsCommand):
                   (mcl.__module__, mcl.__name__, mcl._default_manager.count())
             self.stdout.write(msg)
             self.stderr.write("error:  %s" % msg)
-            
+
             logger.info(msg)
